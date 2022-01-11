@@ -8,4 +8,7 @@ The rules of the game:
   5. In an empty cage with three neighbors, a creature is born in the next generation.
 
 To visualize the game, I used the "pygame" module. When the program starts, a user can see a window containing a checkered field of the game. In order to start the game, the user needs to fill in the field with creatures of the first generation ( manually: by clicking on the cells, or automatically: using the button). The buttons also made with module "pygame" allow users to perform the following ations:
-1. Start 
+1. "Start" - starts the game (generations are changed automatically with the speed set in program)
+2. "Stop" - stops the game (the generation changing)
+3. "New game" - clears the field.
+4. "Fill randomly" - fills the playing field with creatures in random order.  
