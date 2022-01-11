@@ -13,4 +13,4 @@ To visualize the game, I used the "pygame" module. When the program starts, a us
 3. "New game" - clears the field.
 4. "Fill randomly" - fills the playing field with creatures in random order.  
 
-![Project screenshot](https://github.com/alexrzntsv/images/raw/life_screenshot.png)
+![Project screenshot](https://github.com/alexrzntsv/images/life_screenshot.png)
