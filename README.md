@@ -12,3 +12,5 @@ To visualize the game, I used the "pygame" module. When the program starts, a us
 2. "Stop" - stops the game (the generation changing)
 3. "New game" - clears the field.
 4. "Fill randomly" - fills the playing field with creatures in random order.  
+
+![Image alt](https://github.com/alexrzntsv/images/raw/image.Снимок экрана 2022-01-11 172513.png)
