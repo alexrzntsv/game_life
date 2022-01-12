@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 import random
 
+
 class Button:
     def __init__(self, surface, width, height, x, y):
         self.surface = surface
@@ -12,17 +13,16 @@ class Button:
         self.inactive_color = (220, 220, 220)
         self.active_color = (128, 128, 128)
 
-
     def draw(self, message):
         mouse = pygame.mouse.get_pos()
         font = pygame.font.Font(None, 30)
         text = font.render(message, True, [0, 0, 0])
-        textpos = (self.x + 5, self.y + 10)
+        text_pos = (self.x + 5, self.y + 10)
         if (self.x < mouse[0] < self.x + self.width) and (self.y < mouse[1] < self.y + self.height):
             pygame.draw.rect(self.surface, self.active_color, (self.x, self.y, self.width, self.height))
         else:
             pygame.draw.rect(self.surface, self.inactive_color, (self.x, self.y, self.width, self.height))
-        self.surface.blit(text, textpos)
+        self.surface.blit(text, text_pos)
 
 
 class Cell:
@@ -33,6 +33,7 @@ class Cell:
 
     def is_alive(self):
         return self.state
+
 
 class CellList:
     def __init__(self, surface, cell_size, nrows, ncolumns, randomize=False):
@@ -62,7 +63,7 @@ class CellList:
                     try:
                         neighbours_list.append(cell_list[y][x].is_alive())
                     except IndexError:
-                        pass
+                        neighbours_list.append(0)
         return neighbours_list
 
     def update(self):
@@ -96,7 +97,6 @@ class CellList:
                                       self.cell_size - 1, self.cell_size - 1))
 
 
-
 class Life:
     def __init__(self, width=200, height=400, cell_size=20, fps=5, randomize=False):
         self.width = width
@@ -119,20 +119,35 @@ class Life:
         for y in range(0, self.height, self.cell_size):
             pygame.draw.line(self.screen, pygame.Color('black'), (0, y), (self.width, y))
 
+    def make_buttons(self):
+        button_start = Button(self.screen, 60, 40, 10, self.height + 10)
+        button_stop = Button(self.screen, 60, 40, 90, self.height + 10)
+        button_new_game = Button(self.screen, 120, 40, 170, self.height + 10)
+        button_fill_randomly = Button(self.screen, 140, 40, 310, self.height + 10)
+        gen_counter = Button(self.screen, 200, 40, 480, self.height + 10)
+        gen_counter.inactive_color, gen_counter.active_color = pygame.Color('white'), pygame.Color('white')
+        button_plus_gen = Button(self.screen, 20, 40, 645, self.height + 10)
+        return button_start, button_stop, button_new_game, button_fill_randomly, gen_counter, button_plus_gen
 
+    def draw_buttons(self, counter,
+                     button_start, button_stop, button_new_game, button_fill_randomly, gen_counter, button_plus_gen):
+        button_start.draw('Start')
+        button_stop.draw('Stop')
+        button_new_game.draw('New Game')
+        button_fill_randomly.draw('Fill randomly')
+        gen_counter.draw(f'Generation: {str(counter)}')
+        button_plus_gen.draw('+')
 
     def run_game(self):
         pygame.init()
         clock = pygame.time.Clock()
         pygame.display.set_caption('Life')
         self.screen.fill(pygame.Color('white'))
-        button_start = Button(self.screen, 60, 40, 10, self.height + 10)
-        button_stop = Button(self.screen, 60, 40, 100, self.height + 10)
-        button_new_game = Button(self.screen, 120, 40, 190, self.height + 10)
-        button_fill_randomly = Button(self.screen, 180, 40, 340, self.height + 10)
         running = False
         game = True
         counter = 0
+        button_start, button_stop, button_new_game, button_fill_randomly, gen_counter, button_plus_gen = \
+            self.make_buttons()
         while game:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -145,13 +160,19 @@ class Life:
                             and (button_stop.y < pygame.mouse.get_pos()[1] < button_stop.y + button_stop.height):
                         running = False
                     elif (button_new_game.x < pygame.mouse.get_pos()[0] < button_new_game.x + button_new_game.width)\
-                            and (button_new_game.y < pygame.mouse.get_pos()[1] < button_new_game.y + button_new_game.height):
-                        running = False
+                            and (button_new_game.y < pygame.mouse.get_pos()[1] <
+                                 button_new_game.y + button_new_game.height):
                         return run(randomize=False)
-                    elif (button_fill_randomly.x < pygame.mouse.get_pos()[0] < button_fill_randomly.x + button_fill_randomly.width)\
-                            and (button_fill_randomly.y < pygame.mouse.get_pos()[1] < button_fill_randomly.y + button_fill_randomly.height):
-                        running = False
+                    elif (button_fill_randomly.x < pygame.mouse.get_pos()[0] <
+                          button_fill_randomly.x + button_fill_randomly.width)\
+                            and (button_fill_randomly.y < pygame.mouse.get_pos()[1] <
+                                 button_fill_randomly.y + button_fill_randomly.height):
                         return run(randomize=True)
+                    elif (button_plus_gen.x < pygame.mouse.get_pos()[0] < button_plus_gen.x + button_plus_gen.width)\
+                            and (button_plus_gen.y < pygame.mouse.get_pos()[1] <
+                                 button_plus_gen.y + button_plus_gen.height) and (not running):
+                        self.rects.update()
+                        counter += 1
                     else:
                         if counter == 0:
                             x_pos = pygame.mouse.get_pos()[0] // self.cell_size
@@ -165,20 +186,20 @@ class Life:
                                 pass
             self.make_grid()
             self.rects.draw()
-            if running == True:
+            if running:
                 self.rects.update()
-                counter+=1
-            button_start.draw('Start')
-            button_stop.draw('Stop')
-            button_new_game.draw('New Game')
-            button_fill_randomly.draw('Fill randomly')
+                counter += 1
+            self.draw_buttons(counter, button_start, button_stop,
+                              button_new_game, button_fill_randomly, gen_counter, button_plus_gen)
             pygame.display.flip()
             clock.tick(self.fps)
         pygame.quit()
 
+
 def run(randomize=False):
     game = Life(680, 480, 20, 5, randomize)
     game.run_game()
+
 
 if __name__ == '__main__':
     run()
